@@ -175,10 +175,19 @@ async function loadCatalog() {
     const response = await fetch(API_URL);
     if (!response.ok) throw new Error("Bad response");
     const data = await response.json();
-    catalog = Array.isArray(data.quotes) ? data.quotes : [];
-    statusEl.textContent = `${catalog.length} quotes in the drawer. Search or press a mood code.`;
-    renderResults([], "");
-    resultsEl.innerHTML = `<div class="empty">The page is blank until you file a search.<span class="cursor"></span></div>`;
+catalog = Array.isArray(data.quotes) ? data.quotes : [];
+
+statusEl.textContent = `${catalog.length} quotes in the drawer. Search or press a mood code.`;
+
+const params = new URLSearchParams(window.location.search);
+const query = params.get("query");
+
+if (query) {
+  queryInput.value = query;
+  search();
+} else {
+  renderResults(catalog.slice(0, 18), "");
+}
   } catch (error) {
     catalog = [];
     statusEl.textContent = "DummyJSON did not answer. Check the network, then reload.";
